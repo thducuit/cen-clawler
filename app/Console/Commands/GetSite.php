@@ -44,6 +44,5 @@ class GetSite extends Command
         } catch(Exception $e) {
             echo $e->getMessage();
         }
-        
     }
 }

@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        Commands\GetSite::class
+        Commands\GetSite::class,
+        Commands\GetContent::class
     ];
 
     /**
