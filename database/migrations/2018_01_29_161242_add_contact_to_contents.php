@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTypeToContentsTable extends Migration
+class AddContactToContents extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class AddTypeToContentsTable extends Migration
     public function up()
     {
         //
-        Schema::table('anchors', function (Blueprint $table) {
-            $table->enum('type', ['mogi', 'propzy']);
+        Schema::table('contents', function (Blueprint $table) {
+            $table->text('contact');
         });
     }
 
