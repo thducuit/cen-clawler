@@ -20,25 +20,31 @@
 
             <div class="content">
                 <table class="table">
-					<thead>
-						<tr>
-							<td>title</td>
-							<td>price</td>
-							<td>address</td>
-						</tr>
-					</thead>
 					<tbody>
-						@foreach($contents as $content)
 						<tr>
-							<td><a href="mogi/{{ $content->id }}">{{ $content->title }}</a></td>
-							<td>{{ $content->price }}</td>
-							<td>{{ $content->address }}</td>
+							<td>{{ $content->title }}</td>
 						</tr>
-						@endforeach
+						<tr>
+							<td>{{ $content->price }}</td>
+						</tr>
+						<tr>
+							<td>{!! $content->info !!}</td>
+						</tr>
+						<tr>
+							<td>{!! $content->detail !!}</td>
+						</tr>
+						<tr>
+							<td>
+								@php
+								 $photos = json_decode($content->photo)
+								@endphp
+								@foreach($photos as $photo)
+									<img src="/public/images/mogi/{{ $photo }}" width="100">
+								@endforeach
+							</td>
+						</tr>
 					</tbody>
 				</table>
-
-				{{ $contents->links() }}
             </div>
         </div>
     </body>
