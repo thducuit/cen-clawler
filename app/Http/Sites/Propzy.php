@@ -9,9 +9,9 @@ use Intervention\Image\Facades\Image as Image;
 /**
 * 
 */
-class Mogi
+class Propzy
 {
-	private $_site = 'https://mogi.vn';
+	private $_site = 'https://propzy.vn';
 
 	private $_dom;
 
@@ -25,7 +25,7 @@ class Mogi
 		$this->_client = new \GuzzleHttp\Client;
 		$this->_dom = new Dom;
 		try {
-			$this->_response = $this->_client->request('GET', 'https://mogi.vn');
+			$this->_response = $this->_client->request('GET', 'https://propzy.vn');
 			$this->_html = $this->_response->getBody();
 			$statusCode = $this->_response->getStatusCode();
 		}catch(Exception $e) {
@@ -39,7 +39,7 @@ class Mogi
 
 	public function get_anchor_home_page() {
     	$this->_dom->load($this->_html);
-    	$anchors = $this->_dom->find('.footer-right-parent	a');
+    	$anchors = $this->_dom->find('.bl-footer-top .ul-listing a');
     	foreach($anchors as $anchor) {
     		$href = $anchor->getAttribute('href');
     		if( $this->_is_href($href) ) {
@@ -47,7 +47,7 @@ class Mogi
 				    [
 				    	'link' => $this->_add_site_prefix($href), 
 				    	'status' => 0,
-				    	'type' => 'mogi'
+				    	'type' => 'propzy'
 				    ]
 				);
 			}
@@ -58,7 +58,7 @@ class Mogi
 		$anchorObjects = DB::table('anchors')
 				->select('id', 'link')
                 ->where('status', 0)
-                ->where('type', 'mogi')
+                ->where('type', 'propzy')
                 ->get();
         foreach($anchorObjects as $anchorObject) {
 
@@ -105,7 +105,7 @@ class Mogi
 					    [
 					    	'link' => $href, 
 					    	'status' => 0,
-					    	'type' => 'mogi'
+					    	'type' => 'propzy'
 					    ]
 					);
 				}
@@ -114,19 +114,19 @@ class Mogi
 	}
 
 	private function _get_content($anchor_id) {
-		$title = $this->_dom->find('#property #property-intro .title');
-		$price = $this->_dom->find('#property #property-intro .price');
-		$address = $this->_dom->find('#property #property-intro .address');
-		$content = $this->_dom->find('#property #property-detail .property-info-content');
-		$photos = $this->_dom->find('#property #gallery #top-media .media-item img');
-
-		$contact = $this->_dom->find('.broker-contact-left');
+		$title = $this->_dom->find('.detailpage .bl-detail-listing .block-info .name');
+		$price = $this->_dom->find('.detailpage .bl-img-listing .bl-information .bl-value .bl-price');
+		$address = $this->_dom->find('.detailpage .bl-detail-listing .block-info-1 .span-ward-posting');
+		$detail = $this->_dom->find('.detailpage .bl-detail-listing .block-info-2');
+		$content = $this->_dom->find('.detailpage .bl-detail-listing .block-info-3');
+		
+		$photos = $this->_dom->find('.detailpage .bl-img-listing .bl-img img');
 
 		$photo_array = [];
 		foreach ($photos as $photo) {
 			$path = $photo->getAttribute('src');
 			$filename = basename($path);
-			Image::make($path)->save(public_path('images/mogi/' . $filename));
+			Image::make($path)->save(public_path('images/propzy/' . $filename));
 			$photo_array[] = $filename;
 		}
 		
@@ -138,9 +138,8 @@ class Mogi
 			    	'price' => !empty($price) ? $price->innerHtml:'',
 			    	'address' => !empty($address) ? $address->innerHtml:'',
 			    	'photo' => json_encode($photo_array),
-			    	'info' => isset($content[0]) ? htmlentities($content[0]->innerHtml):'',
-			    	'detail' => isset($content[1]) ? htmlentities($content[1]->innerHtml):'',
-			    	'contact' => isset($contact[0]) ? htmlentities($contact[0]->innerHtml):'',
+			    	'info' => !empty($detail) ? htmlentities($detail->innerHtml):'',
+			    	'detail' => !empty($content) ? htmlentities($content->innerHtml):'',
 			    	'anchor_id' => $anchor_id
 			    ]
 			);
@@ -185,7 +184,7 @@ class Mogi
 
 	private function _is_accept_site($href = '') {
 		$patterns = [
-			'/^(https\:\/\/mogi\.vn)/'
+			'/^(https\:\/\/propzy\.vn)/'
 		];
 
 		for($i = 0; $i<count($patterns); $i++) {
