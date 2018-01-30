@@ -123,11 +123,16 @@ class Mogi
 		$contact = $this->_dom->find('.broker-contact-left');
 
 		$photo_array = [];
-		foreach ($photos as $photo) {
-			$path = $photo->getAttribute('src');
-			$filename = basename($path);
-			Image::make($path)->save(public_path('images/mogi/' . $filename));
-			$photo_array[] = $filename;
+		
+		try{
+			foreach ($photos as $photo) {
+				$path = $photo->getAttribute('src');
+				$filename = basename($path);
+				Image::make($path)->save(public_path('images/mogi/' . $filename));
+				$photo_array[] = $filename;
+			}
+		}catch(Exception $e) {
+			echo "[ERROR]: " . $e->getMessage();
 		}
 		
 		if( $title->count() > 0 ) {

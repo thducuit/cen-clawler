@@ -12,4 +12,4 @@
 */
 
 Route::get('/', ['uses' => 'HomeController@index']);
-Route::get('mogi/{id}', ['uses' => 'HomeController@mogi']);
+Route::get('detail/{id}', ['uses' => 'HomeController@detail']);

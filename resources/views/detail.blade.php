@@ -39,7 +39,7 @@
 								 $photos = json_decode($content->photo)
 								@endphp
 								@foreach($photos as $photo)
-									<img src="/public/images/mogi/{{ $photo }}" width="100">
+									<img src="/images/{{ $anchor->type }}/{{ $photo }}" width="100">
 								@endforeach
 							</td>
 						</tr>

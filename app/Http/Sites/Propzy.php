@@ -68,11 +68,12 @@ class Propzy
 
 			$anchor_id = $anchorObject->id;
 
+			echo $anchorObject->link . PHP_EOL;
+
 			try{
 				$this->_response = $this->_client->request('GET', $anchorObject->link);
 				$this->_html = $this->_response->getBody();
 				$statusCode = $this->_response->getStatusCode();
-				
 
 				if($statusCode == '200') {
 					$this->_dom->load($this->_html);
@@ -114,7 +115,7 @@ class Propzy
 	}
 
 	private function _get_content($anchor_id) {
-		$title = $this->_dom->find('.detailpage .bl-detail-listing .block-info .name');
+		$title = $this->_dom->find('.detailpage .bl-detail-listing .block-info h1');
 		$price = $this->_dom->find('.detailpage .bl-img-listing .bl-information .bl-value .bl-price');
 		$address = $this->_dom->find('.detailpage .bl-detail-listing .block-info-1 .span-ward-posting');
 		$detail = $this->_dom->find('.detailpage .bl-detail-listing .block-info-2');
@@ -127,15 +128,19 @@ class Propzy
 		try{
 			foreach ($photos as $photo) {
 				$path = $photo->getAttribute('src');
-				$filename = basename($path);
-				Image::make($path)->save(public_path('images/propzy/' . $filename));
-				$photo_array[] = $filename;
+				echo $path . PHP_EOL;
+				if( $this->_is_accept_img($path) ) {
+					$filename = basename($path);
+					Image::make($path)->save(public_path('images/propzy/' . $filename));
+					$photo_array[] = $filename;
+				}
 			}
 		}catch(Exception $e) {
 			echo "[ERROR]: " . $e->getMessage();
 		}
 		
 		if( $title->count() > 0 ) {
+			
 			try{
 				DB::table('contents')->insert(
 				    [
@@ -143,8 +148,9 @@ class Propzy
 				    	'price' => !empty($price) ? $price->innerHtml:'',
 				    	'address' => !empty($address) ? $address->innerHtml:'',
 				    	'photo' => json_encode($photo_array),
-				    	'info' => !empty($detail) ? htmlentities($detail->innerHtml):'',
-				    	'detail' => !empty($content) ? htmlentities($content->innerHtml):'',
+				    	'info' => !empty($detail) ? addslashes($detail->innerHtml):'',
+				    	'detail' => !empty($content) ? addslashes($content->innerHtml):'',
+				    	'contact' => '',
 				    	'anchor_id' => $anchor_id
 				    ]
 				);
@@ -160,7 +166,7 @@ class Propzy
 	            ->where('id', $anchor_id)
 	            ->update(['status' => 1]);
 			}
-		}
+		} 
 	}
 
 	private function _add_site_prefix($href = '') {
@@ -206,6 +212,20 @@ class Propzy
     		}
     	}
     	return false;
+	}
+
+	private function _is_accept_img($path = '') {
+		$patterns = [
+			'/^(\/assets)/',
+			'/(null)$/'
+		];
+
+		for($i = 0; $i<count($patterns); $i++) {
+    		if( preg_match($patterns[$i], $path, $matches) ) {
+    			return false;
+    		}
+    	}
+    	return true;
 	}
 
 }

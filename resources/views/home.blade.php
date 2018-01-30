@@ -22,23 +22,21 @@
                 <table class="table">
 					<thead>
 						<tr>
-							<td>title</td>
-							<td>price</td>
-							<td>address</td>
+							<td>title ({{ $anchors->total() }}) </td>
+							<td>site</td>
 						</tr>
 					</thead>
 					<tbody>
-						@foreach($contents as $content)
+						@foreach($anchors as $anchor)
 						<tr>
-							<td><a href="mogi/{{ $content->id }}">{{ $content->title }}</a></td>
-							<td>{{ $content->price }}</td>
-							<td>{{ $content->address }}</td>
+							<td><a href="detail/{{ $anchor->id }}">{{ $anchor->link }}</a></td>
+							<td>{{ $anchor->type }}</td>
 						</tr>
 						@endforeach
 					</tbody>
 				</table>
 
-				{{ $contents->links() }}
+				{{ $anchors->links() }}
             </div>
         </div>
     </body>
