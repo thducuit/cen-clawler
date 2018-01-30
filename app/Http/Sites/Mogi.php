@@ -132,22 +132,31 @@ class Mogi
 		
 		if( $title->count() > 0 ) {
 
-			DB::table('contents')->insert(
-			    [
-			    	'title' => $title->innerHtml, 
-			    	'price' => !empty($price) ? $price->innerHtml:'',
-			    	'address' => !empty($address) ? $address->innerHtml:'',
-			    	'photo' => json_encode($photo_array),
-			    	'info' => isset($content[0]) ? htmlentities($content[0]->innerHtml):'',
-			    	'detail' => isset($content[1]) ? htmlentities($content[1]->innerHtml):'',
-			    	'contact' => isset($contact[0]) ? htmlentities($contact[0]->innerHtml):'',
-			    	'anchor_id' => $anchor_id
-			    ]
-			);
+			try{
+				DB::table('contents')->insert(
+				    [
+				    	'title' => $title->innerHtml, 
+				    	'price' => !empty($price) ? $price->innerHtml:'',
+				    	'address' => !empty($address) ? $address->innerHtml:'',
+				    	'photo' => json_encode($photo_array),
+				    	'info' => isset($content[0]) ? htmlentities($content[0]->innerHtml):'',
+				    	'detail' => isset($content[1]) ? htmlentities($content[1]->innerHtml):'',
+				    	'contact' => isset($contact[0]) ? htmlentities($contact[0]->innerHtml):'',
+				    	'anchor_id' => $anchor_id
+				    ]
+				);
 
-			DB::table('anchors')
-            ->where('id', $anchor_id)
-            ->update(['status' => 2]);
+				DB::table('anchors')
+	            ->where('id', $anchor_id)
+	            ->update(['status' => 2]);
+			}
+			catch(Exception $e) {
+				echo "[ERROR]: " . $e->getMessage();
+				//
+				DB::table('anchors')
+	            ->where('id', $anchor_id)
+	            ->update(['status' => 1]);
+			}
 		}
 	}
 

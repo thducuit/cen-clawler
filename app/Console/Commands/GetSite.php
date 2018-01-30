@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Http\Sites\Mogi;
+use App\Http\Sites\Propzy;
 
 class GetSite extends Command
 {
@@ -12,7 +13,7 @@ class GetSite extends Command
      *
      * @var string
      */
-    protected $signature = 'site:get';
+    protected $signature = 'site:get {site}';
 
     /**
      * The console command description.
@@ -38,9 +39,20 @@ class GetSite extends Command
      */
     public function handle()
     {
-        $mogi = new Mogi();
+        switch ($this->argument('site')) {
+            case 'mogi':
+                $site = new Mogi();
+                break;
+            case 'propzy':
+                $site = new Propzy();
+                break;
+            default:
+                # code...
+                break;
+        }
+        
         try {
-            $mogi->get_anchor_home_page();
+            $site->get_anchor_home_page();
         } catch(Exception $e) {
             echo $e->getMessage();
         }

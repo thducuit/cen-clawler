@@ -17,7 +17,7 @@ class CreateContentsTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->string('price');
-            $table->string('photo');
+            $table->text('photo');
             $table->text('address');
             $table->text('info');
             $table->text('detail');

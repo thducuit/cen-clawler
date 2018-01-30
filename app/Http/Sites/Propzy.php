@@ -123,30 +123,43 @@ class Propzy
 		$photos = $this->_dom->find('.detailpage .bl-img-listing .bl-img img');
 
 		$photo_array = [];
-		foreach ($photos as $photo) {
-			$path = $photo->getAttribute('src');
-			$filename = basename($path);
-			Image::make($path)->save(public_path('images/propzy/' . $filename));
-			$photo_array[] = $filename;
+		
+		try{
+			foreach ($photos as $photo) {
+				$path = $photo->getAttribute('src');
+				$filename = basename($path);
+				Image::make($path)->save(public_path('images/propzy/' . $filename));
+				$photo_array[] = $filename;
+			}
+		}catch(Exception $e) {
+			echo "[ERROR]: " . $e->getMessage();
 		}
 		
 		if( $title->count() > 0 ) {
+			try{
+				DB::table('contents')->insert(
+				    [
+				    	'title' => $title->innerHtml, 
+				    	'price' => !empty($price) ? $price->innerHtml:'',
+				    	'address' => !empty($address) ? $address->innerHtml:'',
+				    	'photo' => json_encode($photo_array),
+				    	'info' => !empty($detail) ? htmlentities($detail->innerHtml):'',
+				    	'detail' => !empty($content) ? htmlentities($content->innerHtml):'',
+				    	'anchor_id' => $anchor_id
+				    ]
+				);
 
-			DB::table('contents')->insert(
-			    [
-			    	'title' => $title->innerHtml, 
-			    	'price' => !empty($price) ? $price->innerHtml:'',
-			    	'address' => !empty($address) ? $address->innerHtml:'',
-			    	'photo' => json_encode($photo_array),
-			    	'info' => !empty($detail) ? htmlentities($detail->innerHtml):'',
-			    	'detail' => !empty($content) ? htmlentities($content->innerHtml):'',
-			    	'anchor_id' => $anchor_id
-			    ]
-			);
-
-			DB::table('anchors')
-            ->where('id', $anchor_id)
-            ->update(['status' => 2]);
+				DB::table('anchors')
+	            ->where('id', $anchor_id)
+	            ->update(['status' => 2]);
+            }
+			catch(Exception $e) {
+				echo "[ERROR]: " . $e->getMessage();
+				//
+				DB::table('anchors')
+	            ->where('id', $anchor_id)
+	            ->update(['status' => 1]);
+			}
 		}
 	}
 
